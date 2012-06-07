@@ -46,35 +46,43 @@ Follow the directions to obtain and compile LLVM/clang here:
 
 http://clang.llvm.org/get_started.html#build
 
-Stick to the directory structure suggested by this website. Compile LLVM/clang and see if this is working. The root path of the LLVM subversion folder will in the following be aliased by <llvm_src>. The folder where you built llvm is aliased <llvm_bin>
+Stick to the directory structure suggested by this website, but run configure with the option --enable-optimized which will speed-up llvm/clang by some factors. Compile LLVM/clang and see if this is working. The root path of the LLVM subversion folder will in the following be aliased by . The folder where you built llvm is aliased
 
-Export the path to the new clang binary ( Bash example ):
-export PATH=<llvm_bin>/Debug+Asserts/bin/:$PATH
+Now, git clone the repository which contains the CMS extensions into the same folder as resides:
 
-Now, git clone the repository this the extentions to a location of your choice:
 git clone https://hauth.web.cern.ch/hauth/git/clang_cms/
 
-Open the file CMakeLists.txt and modify the path to llvm/clang to fit for your build system. Then run these commands:
+and run
 
 cmake .
 make
 
-The compiled plugin will be in lib/ and is named ClangCms.so
+inside the clang_cms folder. If you encounter problems with missing files or directories, you may need to edit the file CMakeLists.txt to adapt it to your specific build configuration.
 
-If you want to do short test-drive, go to the clang_cms/test folder and run:
-
-clang++ -Xclang -load -Xclang <clang_cms>/lib/ClangCms.so -Xclang -analyzer-checker=threadsafety.GlobalStatic --analyze global_static.cpp
+The CMS specific checkers have now been compiled into an external library in clang_cms/lib. 
 
 == Load the plugin in scan-build == 
+Export the path to the new clang binary ( Bash example ):
 
-Unfortunately, clang does not provide a way to load plugins during it's analyze run using regular make files (scan-build). To enable this, a patch must be applied to the clang analyzer script
+export PATH=<llvm_bin>/Release+Asserts/bin/:$PATH
 
-cd <llvm_src>
-patch -p0 -i <clang_cms>/scan-build.patch
+To see a listing of all available checkers, also the CMS-specific ones, you can run the scan-build command:
 
-This is a perl script, so there is no need for a recompile. Now you can set the plugins to load during the analyze run via:
+<llvm_src>/tools/clang/tools/scan-build/scan-build -load-plugin lib/ClangCms.so
 
-export CCC_ANALYZER_PLUGINS="-load <clang_cms>/lib/ClangCms.so"
+Test out the newly compiled and modified clang, cd into the clang_cms/test folder and run:
+
+<llvm_src>/tools/clang/tools/scan-build/scan-build -load-plugin ../lib/ClangCms.so -enable-checker threadsafety.ConstCast -enable-checker threadsafety.ConstCastAway -enable-checker threadsafety.GlobalStatic -enable-checker threadsafety.MutableMember -enable-checker threadsafety.StaticLocal make -B
+
+This wil produce a clang static analyzer html your can open in your favorite browser. You can find the location in the output line, something along the lines:
+
+scan-build: 6 bugs found.
+scan-build: Run 'scan-view /tmp/scan-build-2012-04-26-13' to examine bug reports.
+
+You then call:
+
+firefox /tmp/scan-build-2012-04-26-13/index.html
+
 
 == Test on a small example (non-CMSSW) ==
 
@@ -89,4 +97,36 @@ scan-build: Run 'scan-view /tmp/scan-build-2012-04-26-13' to examine bug reports
 
 You then call:
 > firefox /tmp/scan-build-2012-04-26-13/index.html
+
+== Run within a SCRAM-based build ==
+
+Create a project area with arch slc5_amd64_gcc470
+
+export SCRAM_ARCH=slc5_amd64_gcc470
+source cmsset_default.sh
+scram pro CMSSW CMSSW_6_0_0_pre3
+
+In the project area edit
+
+config/toolbox/slc5_amd64_gcc470/tools/selected/cxxcompiler
+
+and change these lines
+
+#      <environment name="CXX" value="$GCCBINDIR/c++"/>
+      <environment name="CXX" value="(llvm src path)/tools/clang/tools/scan-build/c++-analyzer"/>
+
+Then setup the project area with the new cxxcompiler settings
+
+scram setup cxxcompiler
+
+Now you can run a build as usual expect that you will run scan-build to collect the results and then run scan-view to view them. The output by default goes to /tmp/scan-view-date-1
+
+cd src/(your package dir)
+scan-build scram b -v -k -j 4
+scan-view /tmp/scan-view-(date)-(##)
+
+You will need to include the paths to clang, scan-build and scan-view in your path
+
+export PATH=$PATH\:(llvm install path)/bin/\:(llvm src path)/tools/clang/tools/scan-build/\:(llvm src path)/tools/clang/tools/scan-view/
+
  
