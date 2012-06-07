@@ -11,16 +11,16 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include <iostream>
-
-#include "ClangSACheckers.h"
 #include "clang/StaticAnalyzer/Core/Checker.h"
+#include "clang/StaticAnalyzer/Core/CheckerRegistry.h"
 #include "clang/StaticAnalyzer/Core/CheckerManager.h"
 #include "clang/StaticAnalyzer/Core/PathSensitive/CheckerContext.h"
 #include "clang/StaticAnalyzer/Core/BugReporter/BugType.h"
 
 #include "clang/StaticAnalyzer/Cms/CmsException.h"
 
+
+#include "ClangCheckerPluginDef.h"
 
 using namespace clang;
 using namespace ento;
@@ -71,6 +71,4 @@ void GlobalStaticChecker::checkASTDecl(const VarDecl *D,
 
 }
 
-void ento::registerGlobalStaticChecker(CheckerManager &mgr) {
-  mgr.registerChecker<GlobalStaticChecker>();
-}
+DEF_CLANG_CHECKER_PLUGIN ( GlobalStaticChecker, "threadsafety.GlobalStatic", "Checks for global non-const statics which might not be thread-safe" )

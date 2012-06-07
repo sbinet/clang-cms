@@ -27,9 +27,6 @@ CmsException::CmsException()
 {
 	m_exceptions.push_back( new llvm::Regex( "edm::InputSourcePluginFactory::PMaker.*" ));
 	m_exceptions.push_back( new llvm::Regex( "edm::InputSourcePluginFactory*" ));
-
-
-	// mem leak
 }
 
 

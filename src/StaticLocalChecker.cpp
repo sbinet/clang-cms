@@ -1,4 +1,4 @@
-//== MutableMemberChecker.cpp - Checks for mutable members --------------*- C++ -*--==//
+//== StaticLocalChecker.cpp - Checks for non-const static locals --------------*- C++ -*--==//
 //
 //                     The LLVM Compiler Infrastructure
 //
@@ -11,56 +11,50 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include <iostream>
-
-#include "ClangSACheckers.h"
 #include "clang/StaticAnalyzer/Core/Checker.h"
 #include "clang/StaticAnalyzer/Core/CheckerManager.h"
+#include "clang/StaticAnalyzer/Core/CheckerRegistry.h"
 #include "clang/StaticAnalyzer/Core/PathSensitive/CheckerContext.h"
 #include "clang/StaticAnalyzer/Core/BugReporter/BugType.h"
+
+#include "ClangCheckerPluginDef.h"
 
 using namespace clang;
 using namespace ento;
 
 namespace {
-class MutableMemberChecker : public Checker< check::ASTDecl<FieldDecl> > {
+class StaticLocalChecker : public Checker< check::ASTDecl<VarDecl> > {
   mutable OwningPtr<BuiltinBug> BT;
 /*  void reportBug(const char *Msg,
                  ProgramStateRef StateZero,
                  CheckerContext &C) const ;*/
 public:
-  void checkASTDecl(const FieldDecl *D,
+  void checkASTDecl(const VarDecl *D,
                       AnalysisManager &Mgr,
                       BugReporter &BR) const;
 };  
 } // end anonymous namespace
 
-void MutableMemberChecker::checkASTDecl(const FieldDecl *D,
+void StaticLocalChecker::checkASTDecl(const VarDecl *D,
                     AnalysisManager &Mgr,
                     BugReporter &BR) const
 {
-
 	QualType t =  D->getType();
-
-	if ( D->isMutable() &&
-			// I *think* this means it is member of a class ...
-			 D->getDeclContext()->isRecord() )
+	if ( D->isStaticLocal() && !t.isConstQualified())
 	{
 	  PathDiagnosticLocation DLoc =
 	    PathDiagnosticLocation::createBegin(D, BR.getSourceManager());
 
 	    std::string buf;
 	    llvm::raw_string_ostream os(buf);
-	    os << "Mutable member'" << *D << "' in class, might be thread-unsafe when accessing via a const handle.";
+	    os << "Non-const variable '" << *D << "' is local static and might be thread-unsafe";
 
-	    BR.EmitBasicReport(D, "Possibly Thread-Unsafe: Mutable member",
+	    BR.EmitBasicReport(D, "Possibly Thread-Unsafe: non-const static local variable",
 	    					"ThreadSafety",
 	                       os.str(), DLoc);
 	    return;
 	}
-
 }
 
-void ento::registerMutableMemberChecker(CheckerManager &mgr) {
-  mgr.registerChecker<MutableMemberChecker>();
-}
+
+DEF_CLANG_CHECKER_PLUGIN ( StaticLocalChecker, "threadsafety.StaticLocal", "Checks for non-const method local statics which might not be thread-safe" )

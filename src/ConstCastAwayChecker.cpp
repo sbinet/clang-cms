@@ -13,13 +13,14 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include <iostream>
 
-#include "ClangSACheckers.h"
 #include "clang/StaticAnalyzer/Core/Checker.h"
+#include "clang/StaticAnalyzer/Core/CheckerRegistry.h"
 #include "clang/StaticAnalyzer/Core/CheckerManager.h"
 #include "clang/StaticAnalyzer/Core/PathSensitive/CheckerContext.h"
 #include "clang/StaticAnalyzer/Core/BugReporter/BugType.h"
+
+#include "ClangCheckerPluginDef.h"
 
 using namespace clang;
 using namespace ento;
@@ -57,6 +58,6 @@ void ConstCastAwayChecker::checkPreStmt(const ExplicitCastExpr *CE,
 	}
 }
 
-void ento::registerConstCastAwayChecker(CheckerManager &mgr) {
-	mgr.registerChecker<ConstCastAwayChecker>();
-}
+// Register plugin!
+DEF_CLANG_CHECKER_PLUGIN ( ConstCastAwayChecker, "threadsafety.ConstCastAwayChecker", "Checks for casts which remove const qualifier and might result in thread-unsafe code")
+

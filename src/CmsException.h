@@ -6,6 +6,10 @@
 // License. See LICENSE.TXT for details.
 //
 //===----------------------------------------------------------------------===//
+//
+// by Thomas Hauth [ Thomas.Hauth@cern.ch ]
+//
+//===----------------------------------------------------------------------===//
 
 #ifndef LLVM_CLANG_STATICANALYZER_CMS_CMSEXCEPTION_H
 #define LLVM_CLANG_STATICANALYZER_CMS_CMSEXCEPTION_H
