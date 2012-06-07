@@ -47,16 +47,17 @@ void StaticMemberChecker::checkASTDecl(const VarDecl *D,
 	// static locals
 	if ( var_D != NULL )
 	{*/
-	if ( D->isStaticLocal())
+	QualType t =  D->getType();
+	if ( D->isStaticLocal() && !t.isConstQualified())
 	{
 	  PathDiagnosticLocation DLoc =
 	    PathDiagnosticLocation::createBegin(D, BR.getSourceManager());
 
 	    std::string buf;
 	    llvm::raw_string_ostream os(buf);
-	    os << "Variable '" << *D << "' is local static and might be thread-unsafe";
+	    os << "Non-const variable '" << *D << "' is local static and might be thread-unsafe";
 
-	    BR.EmitBasicReport(D, "Possibly Thread-Unsafe: static local variable",
+	    BR.EmitBasicReport(D, "Possibly Thread-Unsafe: non-const static local variable",
 	    					"ThreadSafety",
 	                       os.str(), DLoc);
 	    return;
