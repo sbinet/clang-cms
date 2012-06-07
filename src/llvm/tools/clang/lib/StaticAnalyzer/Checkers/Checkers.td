@@ -20,6 +20,8 @@ def CoreBuiltin : Package<"builtin">, InPackage<Core>;
 def CoreUninitialized  : Package<"uninitialized">, InPackage<Core>;
 def CoreExperimental : Package<"core">, InPackage<Experimental>, Hidden;
 
+def ThreadSafety : Package<"threadsafety">;
+
 def Cplusplus : Package<"cplusplus">;
 def CplusplusExperimental : Package<"cplusplus">, InPackage<Experimental>, Hidden;
 
@@ -76,10 +78,6 @@ def DivZeroChecker : Checker<"DivideZero">,
   HelpText<"Check for division by zero">,
   DescFile<"DivZeroChecker.cpp">;
   
-def StaticMemberChecker : Checker<"StaticMember">,
-  HelpText<"Checks for static members which are not thread-safe">,
-  DescFile<"StaticMemberChecker.cpp">;  
-
 def UndefResultChecker : Checker<"UndefinedBinaryOperatorResult">,
   HelpText<"Check for undefined results of binary operators">,
   DescFile<"UndefResultChecker.cpp">;
@@ -89,6 +87,37 @@ def StackAddrEscapeChecker : Checker<"StackAddressEscape">,
   DescFile<"StackAddrEscapeChecker.cpp">;
 
 } // end "core"
+
+
+//===----------------------------------------------------------------------===//
+// ThreadSafety Checkers.
+//===----------------------------------------------------------------------===//
+
+
+let ParentPackage = ThreadSafety in {
+
+def StaticLocalChecker : Checker<"StaticLocal">,
+  HelpText<"Checks for non-const method local statics which might not be thread-safe">,
+  DescFile<"StaticLocalChecker.cpp">;  
+  
+def GlobalStaticChecker : Checker<"GlobalStatic">,
+  HelpText<"Checks for global non-const statics which might not be thread-safe">,
+  DescFile<"GlobalStaticChecker.cpp">;  
+
+def MutableMemberChecker : Checker<"MutableMember">,
+  HelpText<"Checks for members with the mutable keyword which might not be thread-safe">,
+  DescFile<"MutableMemberChecker.cpp">;  
+
+def ConstCastChecker : Checker<"ConstCast">,
+  HelpText<"Checks for const_cast which might result in thread-unsafe code">,
+  DescFile<"ConstCastChecker.cpp">; 
+
+def ConstCastAwayChecker : Checker<"ConstCastAway">,
+  HelpText<"Checks for casts which remove const qualifier and might result in thread-unsafe code">,
+  DescFile<"ConstCastAwayChecker.cpp">; 
+
+
+} // end "ThreadSafety"
 
 let ParentPackage = CoreExperimental in {
 

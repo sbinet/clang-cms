@@ -1,4 +1,4 @@
-//== DivZeroChecker.cpp - Division by zero checker --------------*- C++ -*--==//
+//== StaticLocalChecker.cpp - Checks for non-const static locals --------------*- C++ -*--==//
 //
 //                     The LLVM Compiler Infrastructure
 //
@@ -7,8 +7,7 @@
 //
 //===----------------------------------------------------------------------===//
 //
-// This defines DivZeroChecker, a builtin check in ExprEngine that performs
-// checks for division by zeros.
+// by Thomas Hauth [ Thomas.Hauth@cern.ch ]
 //
 //===----------------------------------------------------------------------===//
 
@@ -24,7 +23,7 @@ using namespace clang;
 using namespace ento;
 
 namespace {
-class StaticMemberChecker : public Checker< check::ASTDecl<VarDecl> > {
+class StaticLocalChecker : public Checker< check::ASTDecl<VarDecl> > {
   mutable OwningPtr<BuiltinBug> BT;
 /*  void reportBug(const char *Msg,
                  ProgramStateRef StateZero,
@@ -36,17 +35,10 @@ public:
 };  
 } // end anonymous namespace
 
-void StaticMemberChecker::checkASTDecl(const VarDecl *D,
+void StaticLocalChecker::checkASTDecl(const VarDecl *D,
                     AnalysisManager &Mgr,
                     BugReporter &BR) const
 {
-
-	//std::cout << D->getNameAsString() << std::endl;
-/*
-	const VarDecl * var_D = dynamic_cast< const VarDecl* > ( D );
-	// static locals
-	if ( var_D != NULL )
-	{*/
 	QualType t =  D->getType();
 	if ( D->isStaticLocal() && !t.isConstQualified())
 	{
@@ -62,30 +54,8 @@ void StaticMemberChecker::checkASTDecl(const VarDecl *D,
 	                       os.str(), DLoc);
 	    return;
 	}
-	/*}*/
-/*
-	// static global vars
-	if ( ( D->getStorageClass() == SC_Static ) &&
-		  D->isStaticDataMember() )
-	{
-
-
-
-	  PathDiagnosticLocation DLoc =
-	    PathDiagnosticLocation::createBegin(D, BR.getSourceManager());
-
-	    std::string buf;
-	    llvm::raw_string_ostream os(buf);
-	    os << "Variable '" << *D << "' is static non-const and might be thread-unsafe";
-
-	    BR.EmitBasicReport(D, "Possibly Thread-Unsafe: static non-const variable",
-	    					"ThreadSafety",
-	                       os.str(), DLoc);
-	    return;
-	}*/
-
 }
 
-void ento::registerStaticMemberChecker(CheckerManager &mgr) {
-  mgr.registerChecker<StaticMemberChecker>();
+void ento::registerStaticLocalChecker(CheckerManager &mgr) {
+  mgr.registerChecker<StaticLocalChecker>();
 }
