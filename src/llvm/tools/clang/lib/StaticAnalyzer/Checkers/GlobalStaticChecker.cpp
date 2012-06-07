@@ -19,6 +19,9 @@
 #include "clang/StaticAnalyzer/Core/PathSensitive/CheckerContext.h"
 #include "clang/StaticAnalyzer/Core/BugReporter/BugType.h"
 
+#include "clang/StaticAnalyzer/Cms/CmsException.h"
+
+
 using namespace clang;
 using namespace ento;
 
@@ -32,6 +35,8 @@ public:
   void checkASTDecl(const VarDecl *D,
                       AnalysisManager &Mgr,
                       BugReporter &BR) const;
+private:
+  CmsException m_ex;
 };  
 } // end anonymous namespace
 
@@ -46,6 +51,10 @@ void GlobalStaticChecker::checkASTDecl(const VarDecl *D,
 			  !D->isStaticLocal() &&
 			 !t.isConstQualified())
 	{
+
+		if ( m_ex.reportGlobalStaticForType(t)  )
+		{
+
 	  PathDiagnosticLocation DLoc =
 	    PathDiagnosticLocation::createBegin(D, BR.getSourceManager());
 
@@ -57,6 +66,7 @@ void GlobalStaticChecker::checkASTDecl(const VarDecl *D,
 	    					"ThreadSafety",
 	                       os.str(), DLoc);
 	    return;
+		}
 	}
 
 }
