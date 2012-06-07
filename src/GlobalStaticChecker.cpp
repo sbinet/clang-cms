@@ -11,34 +11,10 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "clang/StaticAnalyzer/Core/Checker.h"
-#include "clang/StaticAnalyzer/Core/CheckerRegistry.h"
-#include "clang/StaticAnalyzer/Core/CheckerManager.h"
-#include "clang/StaticAnalyzer/Core/PathSensitive/CheckerContext.h"
-#include "clang/StaticAnalyzer/Core/BugReporter/BugType.h"
+#include "GlobalStaticChecker.h"
 
-#include "clang/StaticAnalyzer/Cms/CmsException.h"
-
-
-#include "ClangCheckerPluginDef.h"
-
-using namespace clang;
-using namespace ento;
-
-namespace {
-class GlobalStaticChecker : public Checker< check::ASTDecl<VarDecl> > {
-  mutable OwningPtr<BuiltinBug> BT;
-/*  void reportBug(const char *Msg,
-                 ProgramStateRef StateZero,
-                 CheckerContext &C) const ;*/
-public:
-  void checkASTDecl(const VarDecl *D,
-                      AnalysisManager &Mgr,
-                      BugReporter &BR) const;
-private:
-  CmsException m_ex;
-};  
-} // end anonymous namespace
+namespace clangcms
+{
 
 void GlobalStaticChecker::checkASTDecl(const VarDecl *D,
                     AnalysisManager &Mgr,
@@ -52,7 +28,7 @@ void GlobalStaticChecker::checkASTDecl(const VarDecl *D,
 			 !t.isConstQualified())
 	{
 
-		if ( m_ex.reportGlobalStaticForType(t)  )
+		//if ( m_ex.reportGlobalStaticForType(t)  )
 		{
 
 	  PathDiagnosticLocation DLoc =
@@ -71,4 +47,4 @@ void GlobalStaticChecker::checkASTDecl(const VarDecl *D,
 
 }
 
-DEF_CLANG_CHECKER_PLUGIN ( GlobalStaticChecker, "threadsafety.GlobalStatic", "Checks for global non-const statics which might not be thread-safe" )
+}

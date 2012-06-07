@@ -14,13 +14,12 @@
 #ifndef LLVM_CLANG_STATICANALYZER_CMS_CMSEXCEPTION_H
 #define LLVM_CLANG_STATICANALYZER_CMS_CMSEXCEPTION_H
 
-#include "clang/StaticAnalyzer/Core/Checker.h"
 #include "llvm/Support/Regex.h"
-//#include <boost/regex.hpp>
+#include "clang/AST/Type.h"
 
+using namespace clang;
 
-namespace clang {
-namespace ento {
+namespace clangcms {
 
 class CmsException {
 public:
@@ -33,7 +32,6 @@ private:
 	mutable ExList m_exceptions;
 };
 
-} // end namespace ento
-} // end namespace clang
+} 
 
 #endif

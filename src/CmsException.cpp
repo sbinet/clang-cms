@@ -11,17 +11,11 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include <iostream>
 
+#include "CmsException.h"
 
-#include "ClangSACheckers.h"
-#include "clang/StaticAnalyzer/Cms/CmsException.h"
+namespace clangcms {
 
-using namespace clang;
-using namespace ento;
-
-namespace clang {
-namespace ento {
 
 CmsException::CmsException()
 {
@@ -55,8 +49,6 @@ bool CmsException::reportGlobalStaticForType( QualType const& t ) const
 	}
 
 	return true;
-}
-
 }
 }
 

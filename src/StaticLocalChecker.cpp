@@ -11,29 +11,10 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "clang/StaticAnalyzer/Core/Checker.h"
-#include "clang/StaticAnalyzer/Core/CheckerManager.h"
-#include "clang/StaticAnalyzer/Core/CheckerRegistry.h"
-#include "clang/StaticAnalyzer/Core/PathSensitive/CheckerContext.h"
-#include "clang/StaticAnalyzer/Core/BugReporter/BugType.h"
+#include "StaticLocalChecker.h"
 
-#include "ClangCheckerPluginDef.h"
+namespace clangcms {
 
-using namespace clang;
-using namespace ento;
-
-namespace {
-class StaticLocalChecker : public Checker< check::ASTDecl<VarDecl> > {
-  mutable OwningPtr<BuiltinBug> BT;
-/*  void reportBug(const char *Msg,
-                 ProgramStateRef StateZero,
-                 CheckerContext &C) const ;*/
-public:
-  void checkASTDecl(const VarDecl *D,
-                      AnalysisManager &Mgr,
-                      BugReporter &BR) const;
-};  
-} // end anonymous namespace
 
 void StaticLocalChecker::checkASTDecl(const VarDecl *D,
                     AnalysisManager &Mgr,
@@ -57,4 +38,6 @@ void StaticLocalChecker::checkASTDecl(const VarDecl *D,
 }
 
 
-DEF_CLANG_CHECKER_PLUGIN ( StaticLocalChecker, "threadsafety.StaticLocal", "Checks for non-const method local statics which might not be thread-safe" )
+
+}
+

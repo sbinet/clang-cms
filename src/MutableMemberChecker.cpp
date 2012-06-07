@@ -11,29 +11,9 @@
 //
 //===----------------------------------------------------------------------===//
 
-#include "clang/StaticAnalyzer/Core/Checker.h"
-#include "clang/StaticAnalyzer/Core/CheckerManager.h"
-#include "clang/StaticAnalyzer/Core/CheckerRegistry.h"
-#include "clang/StaticAnalyzer/Core/PathSensitive/CheckerContext.h"
-#include "clang/StaticAnalyzer/Core/BugReporter/BugType.h"
+#include "MutableMemberChecker.h"
 
-#include "ClangCheckerPluginDef.h"
-
-using namespace clang;
-using namespace ento;
-
-namespace {
-class MutableMemberChecker : public Checker< check::ASTDecl<FieldDecl> > {
-  mutable OwningPtr<BuiltinBug> BT;
-/*  void reportBug(const char *Msg,
-                 ProgramStateRef StateZero,
-                 CheckerContext &C) const ;*/
-public:
-  void checkASTDecl(const FieldDecl *D,
-                      AnalysisManager &Mgr,
-                      BugReporter &BR) const;
-};  
-} // end anonymous namespace
+namespace clangcms {
 
 void MutableMemberChecker::checkASTDecl(const FieldDecl *D,
                     AnalysisManager &Mgr,
@@ -59,5 +39,5 @@ void MutableMemberChecker::checkASTDecl(const FieldDecl *D,
 }
 
 
+}
 
-DEF_CLANG_CHECKER_PLUGIN ( MutableMemberChecker, "threadsafety.MutableMemberChecker", "Checks for members with the mutable keyword which might not be thread-safe" )

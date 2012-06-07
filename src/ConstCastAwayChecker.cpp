@@ -13,27 +13,11 @@
 //
 //===----------------------------------------------------------------------===//
 
+#include "ConstCastAwayChecker.h"
+ 
+namespace clangcms
+{
 
-#include "clang/StaticAnalyzer/Core/Checker.h"
-#include "clang/StaticAnalyzer/Core/CheckerRegistry.h"
-#include "clang/StaticAnalyzer/Core/CheckerManager.h"
-#include "clang/StaticAnalyzer/Core/PathSensitive/CheckerContext.h"
-#include "clang/StaticAnalyzer/Core/BugReporter/BugType.h"
-
-#include "ClangCheckerPluginDef.h"
-
-using namespace clang;
-using namespace ento;
-
-namespace {
-
-class ConstCastAwayChecker: public Checker<check::PreStmt<ExplicitCastExpr> > {
-public:
-	mutable OwningPtr<BugType> BT;
-	void checkPreStmt(const ExplicitCastExpr *CE, CheckerContext &C) const;
-};
-
-} // end anonymous namespace
 
 void ConstCastAwayChecker::checkPreStmt(const ExplicitCastExpr *CE,
 		CheckerContext &C) const {
@@ -41,9 +25,6 @@ void ConstCastAwayChecker::checkPreStmt(const ExplicitCastExpr *CE,
 	ASTContext &Ctx = C.getASTContext();
 	QualType OrigTy = Ctx.getCanonicalType(E->getType());
 	QualType ToTy = Ctx.getCanonicalType(CE->getType());
-
-	OrigTy.dump();
-	ToTy.dump();
 
 	if (OrigTy.isConstQualified() && !ToTy.isConstQualified()) {
 		if (ExplodedNode *errorNode = C.generateSink()) {
@@ -58,6 +39,4 @@ void ConstCastAwayChecker::checkPreStmt(const ExplicitCastExpr *CE,
 	}
 }
 
-// Register plugin!
-DEF_CLANG_CHECKER_PLUGIN ( ConstCastAwayChecker, "threadsafety.ConstCastAwayChecker", "Checks for casts which remove const qualifier and might result in thread-unsafe code")
-
+}

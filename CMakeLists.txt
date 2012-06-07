@@ -22,7 +22,6 @@ set (CLANG_BUILD_DIR ${LLVM_SRC_BUILD_DIR}/tools/clang)
 add_definitions (-D__STDC_LIMIT_MACROS -D__STDC_CONSTANT_MACROS)
 add_definitions (-D_GNU_SOURCE -DHAVE_CLANG_CONFIG_H)
 
-
 # this sets up the devel clang as our compiler
 set (CMAKE_CXX_COMPILER "${LLVM_BUILD_DIR}/bin/clang++")
 set (CMAKE_CC_COMPILER "${LLVM_BUILD_DIR}/bin/clang")
@@ -32,27 +31,27 @@ set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-common -Woverloaded-virtual -Wcast
 set (CMAKE_MODULE_LINKER_FLAGS "-Wl,-flat_namespace -Wl,-undefined -Wl,suppress")
 
 set (LLVM_LIBS
-	LLVMJIT
-	LLVMX86CodeGen
-	LLVMX86AsmParser
-	LLVMX86Disassembler
-	LLVMExecutionEngine
-	LLVMAsmPrinter
-	LLVMSelectionDAG
-	LLVMX86AsmPrinter
-	LLVMX86Info
-	LLVMMCParser
-	LLVMCodeGen
-	LLVMX86Utils
-	LLVMScalarOpts
-	LLVMInstCombine
-	LLVMTransformUtils
-	LLVMipa
-	LLVMAnalysis
-	LLVMTarget
-	LLVMCore
-	LLVMMC
-	LLVMSupport
+#	LLVMJIT
+#	LLVMX86CodeGen
+#	LLVMX86AsmParser
+#	LLVMX86Disassembler
+#	LLVMExecutionEngine
+#	LLVMAsmPrinter
+#	LLVMSelectionDAG
+#	LLVMX86AsmPrinter
+#	LLVMX86Info
+#	LLVMMCParser
+#	LLVMCodeGen
+#	LLVMX86Utils
+#	LLVMScalarOpts
+#	LLVMInstCombine
+#	LLVMTransformUtils
+#	LLVMipa
+#	LLVMAnalysis
+#	LLVMTarget
+#	LLVMCore
+#	LLVMMC
+#	LLVMSupport
 )
 
 
@@ -90,32 +89,35 @@ macro(add_clang_plugin name)
 endmacro(add_clang_plugin)
 
 set (CLANG_LIBS
-	clang
-	clangFrontend
-	clangAST
-	clangAnalysis
-	clangBasic
-	clangCodeGen
-	clangDriver
-	clangFrontendTool
-	clangLex
-	clangParse
-	clangRewrite
-	clangSema
-	clangSerialization
-	clangStaticAnalyzerCheckers
-	clangStaticAnalyzerCore
-	clangStaticAnalyzerFrontend
+#	clang
+#	clangFrontend
+#	clangAST
+#	clangAnalysis
+#	clangBasic
+#	clangCodeGen
+#	clangDriver
+#	clangFrontendTool
+#	clangLex
+#	clangParse
+#	clangRewrite
+#	clangSema
+#	clangSerialization
+#	clangStaticAnalyzerCheckers
+#	clangStaticAnalyzerCore
+#	clangStaticAnalyzerFrontend
 )
 
 set (USER_LIBS
 	pthread
 )
 
-add_clang_plugin(ConstCastChecker src/ConstCastChecker.cpp)
-add_clang_plugin(ConstCastAwayChecker src/ConstCastAwayChecker.cpp)
-add_clang_plugin(GlobalStaticChecker src/GlobalStaticChecker.cpp)
-add_clang_plugin(MutableMemberChecker src/MutableMemberChecker.cpp)
-add_clang_plugin(StaticLocalChecker src/StaticLocalChecker.cpp)
+add_clang_plugin( ClangCms 
+	src/ClangCmsCheckerPluginRegister.cpp 
+	src/CmsException.cpp
+	src/ConstCastChecker.cpp 
+	src/ConstCastAwayChecker.cpp
+	src/StaticLocalChecker.cpp
+	src/GlobalStaticChecker.cpp
+	src/MutableMemberChecker.cpp)
 
 
