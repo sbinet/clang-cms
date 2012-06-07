@@ -23,8 +23,12 @@ void MutableMemberChecker::checkASTDecl(const FieldDecl *D,
 			// I *think* this means it is member of a class ...
 			 D->getDeclContext()->isRecord() )
 	{
-	  PathDiagnosticLocation DLoc =
+	    QualType t =  D->getType();
+	    PathDiagnosticLocation DLoc =
 	    PathDiagnosticLocation::createBegin(D, BR.getSourceManager());
+
+	    if ( ! m_exception.reportMutableMember( t, DLoc, BR ) )
+		return;
 
 	    std::string buf;
 	    llvm::raw_string_ostream os(buf);

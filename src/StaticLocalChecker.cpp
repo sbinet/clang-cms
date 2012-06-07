@@ -26,6 +26,9 @@ void StaticLocalChecker::checkASTDecl(const VarDecl *D,
 	  PathDiagnosticLocation DLoc =
 	    PathDiagnosticLocation::createBegin(D, BR.getSourceManager());
 
+	    if ( ! m_exception.reportGlobalStaticForType( t, DLoc, BR ) )
+		return;
+
 	    std::string buf;
 	    llvm::raw_string_ostream os(buf);
 	    os << "Non-const variable '" << *D << "' is local static and might be thread-unsafe";

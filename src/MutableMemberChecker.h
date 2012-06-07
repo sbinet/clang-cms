@@ -17,6 +17,7 @@
 #include "clang/StaticAnalyzer/Core/PathSensitive/CheckerContext.h"
 #include "clang/StaticAnalyzer/Core/BugReporter/BugType.h"
 
+#include "CmsException.h"
 
 using namespace clang;
 using namespace ento;
@@ -29,6 +30,8 @@ public:
   void checkASTDecl(const FieldDecl *D,
                       AnalysisManager &Mgr,
                       BugReporter &BR) const;
+private:
+  CmsException m_exception;
 };  
 }
 

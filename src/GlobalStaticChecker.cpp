@@ -27,12 +27,12 @@ void GlobalStaticChecker::checkASTDecl(const VarDecl *D,
 			  !D->isStaticLocal() &&
 			 !t.isConstQualified())
 	{
-
-		//if ( m_ex.reportGlobalStaticForType(t)  )
-		{
-
 	  PathDiagnosticLocation DLoc =
 	    PathDiagnosticLocation::createBegin(D, BR.getSourceManager());
+    	    QualType t =  D->getType();
+
+	    if ( ! m_exception.reportGlobalStaticForType( t, DLoc, BR ) )
+		return;
 
 	    std::string buf;
 	    llvm::raw_string_ostream os(buf);
@@ -42,7 +42,7 @@ void GlobalStaticChecker::checkASTDecl(const VarDecl *D,
 	    					"ThreadSafety",
 	                       os.str(), DLoc);
 	    return;
-		}
+	
 	}
 
 }

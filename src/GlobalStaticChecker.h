@@ -29,7 +29,7 @@ public:
                       AnalysisManager &Mgr,
                       BugReporter &BR) const;
 private:
-  CmsException m_ex;
+  CmsException m_exception;
 };  
 
 } // end anonymous namespace
