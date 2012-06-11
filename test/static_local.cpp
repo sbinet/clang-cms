@@ -12,7 +12,7 @@ public:
 		static int * intPtr = & evilStaticLocal;
 
 		// no warnings here
-		    static const int c_evilStaticLocal = 0;
+		static const int c_evilStaticLocal = 0;
 		static int const& c_intRef = evilStaticLocal;
 		static int const* c_intPtr = &evilStaticLocal;
 
