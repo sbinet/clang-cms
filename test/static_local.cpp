@@ -15,6 +15,7 @@ public:
 		static const int c_evilStaticLocal = 0;
 		static int const& c_intRef = evilStaticLocal;
 		static int const* c_intPtr = &evilStaticLocal;
+		static const int * c_intPtr_equivalent = &evilStaticLocal;
 
 		static int const* const* c_intPtrPtr = &( c_intPtr);
     }
