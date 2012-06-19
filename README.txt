@@ -57,7 +57,7 @@ and run
 cmake .
 make
 
-inside the clang_cms folder. If you encounter problems with missing files or directories, you may need to edit the file CMakeLists.txt to adapt it to your specific build configuration.
+inside the clang_cms folder. If you need to disable the CMS-specific filters, you can to so in CMakeLists.txt. If you encounter problems with missing files or directories, you may need to edit the file CMakeLists.txt to adapt it to your specific build configuration.
 
 The CMS specific checkers have now been compiled into an external library in clang_cms/lib. 
 
@@ -75,7 +75,7 @@ To see a listing of all available checkers, also the CMS-specific ones, you can 
 
 Test out the newly compiled and modified clang, cd into the clang_cms/test folder and run:
 
-<llvm_src>/tools/clang/tools/scan-build/scan-build -load-plugin ../lib/ClangCms.so -enable-checker threadsafety.ConstCast -enable-checker threadsafety.ConstCastAway -enable-checker threadsafety.GlobalStatic -enable-checker threadsafety.MutableMember -enable-checker threadsafety.StaticLocal make -B
+<llvm_src>/tools/clang/tools/scan-build/scan-build -load-plugin ../lib/ClangCms.so -enable-checker threadsafety make -B
 
 This wil produce a clang static analyzer html your can open in your favorite browser. You can find the location in the output line, something along the lines:
 
