@@ -27,7 +27,7 @@ void ConstCastChecker::checkPreStmt(const CXXConstCastExpr *CE,
 		BugReport *R = new BugReport(*BT, "const_cast was used, this may result in thread-unsafe code.", errorNode);
 		R->addRange(CE->getSourceRange());
 
-		C.EmitReport(R);
+		C.emitReport(R);
 	}
 
 }

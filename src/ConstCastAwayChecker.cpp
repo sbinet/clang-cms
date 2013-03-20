@@ -35,7 +35,7 @@ void ConstCastAwayChecker::checkPreStmt(const ExplicitCastExpr *CE,
 								"ThreadSafety"));
 			BugReport *R = new BugReport(*BT, "const qualifier was removed via a cast, this may result in thread-unsafe code.", errorNode);
 			R->addRange(CE->getSourceRange());
-			C.EmitReport(R);
+			C.emitReport(R);
 		}
 	}
 }
